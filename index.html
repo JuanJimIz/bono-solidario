@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bono Solidario - Tu Granito de Arena</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="overlay"></div>
+        <div class="header-content">
+            <span class="badge">Sorteo Especial</span>
+            <h1>BONO SOLIDARIO</h1>
+            <p class="subtitle">¡Cada aporte cuenta y agradecemos de corazón tu solidaridad!</p>
+            
+            <div class="prize-card">
+                <span class="prize-label">Premio Mayor</span>
+                <div class="prize-amount">$5.000.000 <small>COP</small></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="story-card">
+            <h2>Nuestra Causa</h2>
+            <p class="story-text">
+                Estamos apoyando a nuestra mamá en el proceso de compra de su casa, un sueño que ha implicado grandes esfuerzos, especialmente ante las dificultades ocasionadas por el terremoto.
+            </p>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <strong>Valor del Bono:</strong> $50.000 COP
+                </div>
+                <div class="detail-item">
+                    <strong>Oportunidades:</strong> 2 números por boleta
+                </div>
+                <div class="detail-item">
+                    <strong>Fecha de Sorteo:</strong> Viernes 18 de Diciembre de 2026
+                </div>
+                <div class="detail-item">
+                    <strong>Lotería:</strong> Últimas 3 cifras del premio mayor de la Lotería de Risaralda
+                </div>
+            </div>
+            <p class="disclaimer">* Bono sin cancelar no participa del sorteo.</p>
+        </section>
+
+        <section class="controls-card">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por número (ej: 726 u 000)...">
+            </div>
+            <div class="stats">
+                <span class="stat-badge available">Disponibles: <strong id="countAvailable">500</strong></span>
+                <span class="stat-badge sold">Vendidas: <strong id="countSold">0</strong></span>
+            </div>
+            <div class="admin-actions">
+                <button id="adminToggleBtn" class="btn-secondary">Modo Administrador</button>
+                <button id="exportBtn" class="btn-success hidden">Exportar Ventas a Excel</button>
+            </div>
+        </section>
+
+        <section id="board" class="tickets-grid">
+            <!-- Las 500 boletas se generan dinámicamente con JS -->
+        </section>
+
+    </main>
+
+<!-- MODAL DE ADMINISTRACIÓN -->
+<div id="adminModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Gestionar Boleta #<span id="modalTicketNum"></span></h3>
+    <p id="modalCombinations" class="modal-subtitle"></p>
+
+    <form id="ticketForm">
+      <div class="form-group">
+        <label for="statusSelect">Estado Interno:</label>
+        <select id="statusSelect">
+          <option value="available">Libre</option>
+          <option value="reserved">Separada / Abonó</option>
+          <option value="sold">Vendida (Pagada)</option>
+        </select>
+      </div>
+
+      <div class="buyer-field form-group">
+        <label for="buyerName">Nombre del Comprador:</label>
+        <input type="text" id="buyerName" placeholder="Ej: María Pérez" required>
+      </div>
+
+      <div class="buyer-field form-group">
+        <label for="buyerPhone">Teléfono / WhatsApp:</label>
+        <input type="text" id="buyerPhone" placeholder="Ej: 3001234567"required>
+      </div>
+
+      <div class="buyer-field form-group">
+        <label for="amountPaid">Valor Abonado (COP):</label>
+        <input type="number" id="amountPaid" placeholder="Ej: 20000" min="0" max="50000">
+      </div>
+
+      <div class="buyer-field form-group">
+        <label>Saldo Pendiente:</label>
+        <div id="pendingBalanceDisplay" class="balance-badge">$50.000</div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-save">Guardar Cambios</button>
+        <button type="button" id="closeModalBtn" class="btn-cancel">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL PARA APARTAR POR WHATSAPP (CLIENTE) -->
+<div id="clientModal" class="modal hidden">
+  <div class="modal-content client-modal">
+    <button type="button" id="closeClientModalBtn" class="close-btn">&times;</button>
+    <h3>Apartar Boleta</h3>
+    <p id="clientModalText" class="modal-subtitle"></p>
+    <p class="modal-instruction">Selecciona con quién deseas gestionar tu boleta por WhatsApp:</p>
+
+    <div class="whatsapp-buttons">
+      <a id="wsLuzDaryBtn" target="_blank" class="btn-ws">
+        🟢 Escribir a Luz Dary (322 448 4917)
+      </a>
+      <a id="wsMonicaBtn" target="_blank" class="btn-ws">
+        🟢 Escribir a Mónica (312 874 2283)
+      </a>
+    </div>
+  </div>
+</div>
+
+    <footer>
+        <p><strong>Responsables:</strong> Luz Dary Velásquez (310 399 4968) | Mónica Hoyos (312 874 2283)</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
