@@ -6,6 +6,7 @@
     <title>Bono Solidario - Tu Granito de Arena</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Librería de Supabase (una sola vez en la cabecera) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -59,6 +60,7 @@
             <div class="admin-actions">
                 <button id="adminToggleBtn" class="btn-secondary">Modo Administrador</button>
                 <button id="exportBtn" class="btn-success hidden">Exportar Ventas a Excel</button>
+                <button id="viewRecordsBtn" class="btn-primary hidden">Ver Registros</button>
             </div>
         </section>
 
@@ -68,74 +70,122 @@
 
     </main>
 
-<!-- MODAL DE ADMINISTRACIÓN -->
-<div id="adminModal" class="modal hidden">
-  <div class="modal-content">
-    <h3>Gestionar Boleta #<span id="modalTicketNum"></span></h3>
-    <p id="modalCombinations" class="modal-subtitle"></p>
+    <!-- MODAL DE ADMINISTRACIÓN -->
+    <div id="adminModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Gestionar Boleta #<span id="modalTicketNum"></span></h3>
+        <p id="modalCombinations" class="modal-subtitle"></p>
 
-    <form id="ticketForm">
-      <div class="form-group">
-        <label for="statusSelect">Estado Interno:</label>
-        <select id="statusSelect">
-          <option value="available">Libre</option>
-          <option value="reserved">Separada / Abonó</option>
-          <option value="sold">Vendida (Pagada)</option>
-        </select>
+        <form id="ticketForm">
+          <div class="form-group">
+            <label for="statusSelect">Estado Interno:</label>
+            <select id="statusSelect">
+              <option value="available">Libre</option>
+              <option value="reserved">Separada / Abonó</option>
+              <option value="sold">Vendida (Pagada)</option>
+            </select>
+          </div>
+
+          <div class="buyer-field form-group">
+            <label for="buyerName">Nombre del Comprador:</label>
+            <input type="text" id="buyerName" placeholder="Ej: María Pérez" required>
+          </div>
+
+          <div class="buyer-field form-group">
+            <label for="buyerPhone">Teléfono / WhatsApp:</label>
+            <input type="text" id="buyerPhone" placeholder="Ej: 3001234567" required>
+          </div>
+
+          <div class="buyer-field form-group">
+            <label for="amountPaid">Valor Abonado (COP):</label>
+            <input type="number" id="amountPaid" placeholder="Ej: 20000" min="0" max="50000">
+          </div>
+
+          <div class="buyer-field form-group">
+            <label>Saldo Pendiente:</label>
+            <div id="pendingBalanceDisplay" class="balance-badge">$50.000</div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn-save">Guardar Cambios</button>
+            <button type="button" id="closeModalBtn" class="btn-cancel">Cancelar</button>
+          </div>
+        </form>
       </div>
-
-      <div class="buyer-field form-group">
-        <label for="buyerName">Nombre del Comprador:</label>
-        <input type="text" id="buyerName" placeholder="Ej: María Pérez" required>
-      </div>
-
-      <div class="buyer-field form-group">
-        <label for="buyerPhone">Teléfono / WhatsApp:</label>
-        <input type="text" id="buyerPhone" placeholder="Ej: 3001234567"required>
-      </div>
-
-      <div class="buyer-field form-group">
-        <label for="amountPaid">Valor Abonado (COP):</label>
-        <input type="number" id="amountPaid" placeholder="Ej: 20000" min="0" max="50000">
-      </div>
-
-      <div class="buyer-field form-group">
-        <label>Saldo Pendiente:</label>
-        <div id="pendingBalanceDisplay" class="balance-badge">$50.000</div>
-      </div>
-
-      <div class="modal-actions">
-        <button type="submit" class="btn-save">Guardar Cambios</button>
-        <button type="button" id="closeModalBtn" class="btn-cancel">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- MODAL PARA APARTAR POR WHATSAPP (CLIENTE) -->
-<div id="clientModal" class="modal hidden">
-  <div class="modal-content client-modal">
-    <button type="button" id="closeClientModalBtn" class="close-btn">&times;</button>
-    <h3>Apartar Boleta</h3>
-    <p id="clientModalText" class="modal-subtitle"></p>
-    <p class="modal-instruction">Selecciona con quién deseas gestionar tu boleta por WhatsApp:</p>
-
-    <div class="whatsapp-buttons">
-      <a id="wsLuzDaryBtn" target="_blank" class="btn-ws">
-        🟢 Escribir a Luz Dary (322 448 4917)
-      </a>
-      <a id="wsMonicaBtn" target="_blank" class="btn-ws">
-        🟢 Escribir a Mónica (312 874 2283)
-      </a>
     </div>
-  </div>
-</div>
+
+    <!-- MODAL PARA APARTAR POR WHATSAPP (CLIENTE) -->
+    <div id="clientModal" class="modal hidden">
+      <div class="modal-content client-modal">
+        <button type="button" id="closeClientModalBtn" class="close-btn">&times;</button>
+        <h3>Apartar Boleta</h3>
+        <p id="clientModalText" class="modal-subtitle"></p>
+        <p class="modal-instruction">Selecciona con quién deseas gestionar tu boleta por WhatsApp:</p>
+
+        <div class="whatsapp-buttons">
+          <a id="wsLuzDaryBtn" target="_blank" class="btn-ws">
+            🟢 Escribir a Luz Dary (322 448 4917)
+          </a>
+          <a id="wsMonicaBtn" target="_blank" class="btn-ws">
+            🟢 Escribir a Mónica (312 874 2283)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE REGISTROS PARA ADMINISTRADOR -->
+    <div id="recordsModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <span id="closeRecordsModalBtn" class="close-btn">&times;</span>
+            <h2>Resumen y Registro de Ventas</h2>
+            
+            <!-- Tarjetas de Resumen Financiero -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <span>Total Recaudado</span>
+                    <strong id="totalCollectedDisplay">$0</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Total por Cobrar</span>
+                    <strong id="totalPendingDisplay">$0</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Boletas Ocupadas</span>
+                    <strong id="totalOccupiedDisplay">0 / 500</strong>
+                </div>
+            </div>
+
+            <!-- Buscador dentro de los registros -->
+            <input type="text" id="recordsSearchInput" placeholder="Buscar por comprador, teléfono o boleta..." class="search-input">
+
+            <!-- Tabla de Registros -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Boleta</th>
+                            <th>Números</th>
+                            <th>Comprador</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Abonado</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+                        <!-- Filas dinámicas -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p><strong>Responsables:</strong> Luz Dary Velásquez (310 399 4968) | Mónica Hoyos (312 874 2283)</p>
     </footer>
-    <!-- Librería de Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Tu archivo de script de la aplicación -->
     <script src="script.js"></script>
+
 </body>
 </html>

@@ -11,6 +11,14 @@ let isAdmin = false;
 let selectedTicketId = null;
 
 // Elementos del DOM
+const viewRecordsBtn = document.getElementById('viewRecordsBtn');
+const recordsModal = document.getElementById('recordsModal');
+const closeRecordsModalBtn = document.getElementById('closeRecordsModalBtn');
+const recordsTableBody = document.getElementById('recordsTableBody');
+const recordsSearchInput = document.getElementById('recordsSearchInput');
+const totalCollectedDisplay = document.getElementById('totalCollectedDisplay');
+const totalPendingDisplay = document.getElementById('totalPendingDisplay');
+const totalOccupiedDisplay = document.getElementById('totalOccupiedDisplay');
 const board = document.getElementById('board');
 const searchInput = document.getElementById('searchInput');
 const countAvailable = document.getElementById('countAvailable');
@@ -120,7 +128,7 @@ function renderBoard(filter = '') {
     if (countSold) countSold.textContent = soldCount;
 }
 
-// Hash SHA-256 de la contraseña (reemplaza el texto entre comillas por tu código generado)
+// Hash SHA-256 de la contraseña
 const ADMIN_PASSWORD_HASH = "5db04e46b0c213b7ed285f173fad372723af2bd3ce4e6fdb477f2d119ece74cf";
 
 // Función auxiliar para encriptar en tiempo real la clave que digite el usuario
@@ -143,6 +151,7 @@ if (adminToggleBtn) {
                     isAdmin = true;
                     adminToggleBtn.textContent = "Modo Cliente (Salir)";
                     if (exportBtn) exportBtn.classList.remove('hidden');
+                    if (viewRecordsBtn) viewRecordsBtn.classList.remove('hidden');
                     alert("Modo Administrador activado.");
                 } else {
                     alert("Contraseña incorrecta.");
@@ -152,6 +161,7 @@ if (adminToggleBtn) {
             isAdmin = false;
             adminToggleBtn.textContent = "Modo Administrador";
             if (exportBtn) exportBtn.classList.add('hidden');
+            if (viewRecordsBtn) viewRecordsBtn.classList.add('hidden');
         }
     });
 }
@@ -280,11 +290,85 @@ if (exportBtn) {
     });
 }
 
+// Abrir y cerrar Modal de Registros
+if (viewRecordsBtn) {
+    viewRecordsBtn.addEventListener('click', () => {
+        renderRecordsTable();
+        if (recordsModal) recordsModal.classList.remove('hidden');
+    });
+}
+
+if (closeRecordsModalBtn) {
+    closeRecordsModalBtn.addEventListener('click', () => {
+        if (recordsModal) recordsModal.classList.add('hidden');
+    });
+}
+
 // Cierre de modales por fuera
 window.addEventListener('click', (e) => {
     if (e.target === clientModal) clientModal.classList.add('hidden');
     if (e.target === adminModal) adminModal.classList.add('hidden');
+    if (e.target === recordsModal) recordsModal.classList.add('hidden');
 });
+
+// Función para renderizar la tabla y calcular los totales
+function renderRecordsTable(filter = '') {
+    if (!recordsTableBody) return;
+    recordsTableBody.innerHTML = '';
+
+    let totalCollected = 0;
+    let totalPending = 0;
+    let occupiedCount = 0;
+
+    const query = filter.trim().toLowerCase();
+
+    // Filtrar solo boletas que no estén disponibles ('available')
+    const occupiedTickets = ticketsData.filter(t => t.status !== 'available');
+
+    occupiedTickets.forEach(t => {
+        const paid = t.amountPaid || (t.status === 'sold' ? 50000 : 0);
+        const pending = Math.max(0, 50000 - paid);
+
+        totalCollected += paid;
+        totalPending += pending;
+        occupiedCount++;
+
+        // Filtro de búsqueda interna por comprador, teléfono o número de boleta
+        const matches = t.id.toString().includes(query) ||
+                        t.buyerName.toLowerCase().includes(query) ||
+                        t.buyerPhone.includes(query) ||
+                        t.num1.includes(query) ||
+                        t.num2.includes(query);
+
+        if (query && !matches) return;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>#${t.id}</strong></td>
+            <td>${t.num1} - ${t.num2}</td>
+            <td>${t.buyerName || 'Sin nombre'}</td>
+            <td>${t.buyerPhone || 'Sin teléfono'}</td>
+            <td><span class="badge ${t.status}">${t.status === 'sold' ? 'Pagada' : 'Separada'}</span></td>
+            <td>$${paid.toLocaleString('es-CO')}</td>
+            <td style="color: ${pending > 0 ? '#e74c3c' : '#2ecc71'}; font-weight: bold;">
+                $${pending.toLocaleString('es-CO')}
+            </td>
+        `;
+        recordsTableBody.appendChild(row);
+    });
+
+    // Actualizar los valores en las tarjetas superiores
+    if (totalCollectedDisplay) totalCollectedDisplay.textContent = `$${totalCollected.toLocaleString('es-CO')}`;
+    if (totalPendingDisplay) totalPendingDisplay.textContent = `$${totalPending.toLocaleString('es-CO')}`;
+    if (totalOccupiedDisplay) totalOccupiedDisplay.textContent = `${occupiedCount} / 500`;
+}
+
+// Escuchar cambios en el buscador de la tabla
+if (recordsSearchInput) {
+    recordsSearchInput.addEventListener('input', (e) => {
+        renderRecordsTable(e.target.value);
+    });
+}
 
 // Inicialización
 fetchTickets();

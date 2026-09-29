@@ -154,6 +154,13 @@ body {
 .stat-badge.available { background: #e8f8f0; color: #27ae60; }
 .stat-badge.sold { background: #fdeaea; color: #c0392b; }
 
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 .tickets-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -177,9 +184,7 @@ body {
 }
 
 .ticket-num {
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: #718096;
+    display: none !important;
 }
 
 .ticket-combos {
@@ -229,10 +234,11 @@ body {
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s ease;
 }
 
-.btn-primary { background: var(--primary); color: white; }
+.btn-primary { background: #3b82f6; color: white; }
+.btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
 .btn-secondary { background: #718096; color: white; }
 .btn-success { background: #27ae60; color: white; }
 
@@ -255,6 +261,12 @@ body {
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
+    position: relative !important;
+}
+
+.modal-large {
+    max-width: 800px;
+    width: 90%;
 }
 
 .form-group {
@@ -275,24 +287,6 @@ body {
     border-radius: 6px;
 }
 
-.modal-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-}
-
-footer {
-    text-align: center;
-    padding: 1.5rem;
-    background: #1a202c;
-    color: white;
-    font-size: 0.85rem;
-    margin-top: 2rem;
-}
-.ticket-num {
-    display: none !important;
-}
 .whatsapp-buttons {
     display: flex;
     flex-direction: column;
@@ -317,22 +311,6 @@ footer {
 }
 
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Asegura que la tarjeta del modal permita posicionar la equis adentro */
-.modal-content {
-    position: relative !important;
-}
-
-/* Estilo visible y destacado para la equis de cierre */
-.close-btn {
     position: absolute !important;
     top: 12px !important;
     right: 15px !important;
@@ -340,12 +318,71 @@ footer {
     border: none !important;
     font-size: 28px !important;
     font-weight: bold !important;
-    color: #333333 !important; /* Color oscuro para que se vea sobre el fondo blanco */
+    color: #333333 !important;
     cursor: pointer !important;
     line-height: 1 !important;
     z-index: 10 !important;
 }
 
 .close-btn:hover {
-    color: #e74c3c !important; /* Se pone roja al pasar el mouse por encima */
+    color: #e74c3c !important;
+}
+
+/* Modal de Registros y Tabla */
+.summary-cards {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.summary-card span {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.summary-card strong {
+    font-size: 1.3rem;
+    color: #2c3e50;
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+th {
+    background-color: #f1f3f5;
+    position: sticky;
+    top: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    background: #1a202c;
+    color: white;
+    font-size: 0.85rem;
+    margin-top: 2rem;
 }
