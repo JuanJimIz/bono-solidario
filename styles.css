@@ -386,3 +386,24 @@ footer {
     font-size: 0.85rem;
     margin-top: 2rem;
 }
+/* Ajustes responsivos para celulares (iPhone y otros dispositivos) */
+@media (max-width: 600px) {
+    .summary-cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-large {
+        width: 95%;
+        padding: 1.2rem;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 550px;
+    }
+}
